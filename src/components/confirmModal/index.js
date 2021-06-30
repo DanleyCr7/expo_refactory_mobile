@@ -6,7 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import styled from 'styled-components/native';
 import Icon from '@expo/vector-icons/MaterialIcons';
 import Modal from 'react-native-modal';
@@ -17,14 +17,16 @@ import { TextButton } from  '../textButton';
 import { ButtonOpacity } from '../buttonOpacity';
 import { Colors } from '../../config/colors';
 import { TextInfo } from '../../config/textInfo';
+import { ContentQRCancel, ButtonIconQR } from '../contentQRcancel'
 import api from '../../services/api';
+const { width } = Dimensions.get('screen')
 
 const ConfirmModal = ({ date }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [info, setInfo] = useState('err');
-  const [canRequired, setCanRequired] = useState(false);
-  const [required, setRequired] = useState(false);
-  
+  const [canRequired, setCanRequired] = useState(true);
+  const [required, setRequired] = useState(true);
+  date = ['']
   const apiGetData = async _ => {
     try {
       api.get('/students/1')
@@ -65,11 +67,17 @@ const ConfirmModal = ({ date }) => {
     setModalVisible(false);
   };
 
-  useEffect(_ => { apiGetData() }, []);
-
+  useEffect(_ => { 
+    // apiGetData()
+  }, []);
   return (
     <>
-      <ButtonOpacity 
+    <ContentQRCancel cancel={(canRequired && required) && date}>
+      {(canRequired && required) && date? 
+      <ButtonIconQR>
+        <MaterialCommunityIcons name="qrcode-scan" size={30} color="#000"/>
+      </ButtonIconQR>: null }
+      <ButtonOpacity
         style=
           {!date ? styles.blockButton : 
           !canRequired  ? styles.noAbleButton :
@@ -84,6 +92,7 @@ const ConfirmModal = ({ date }) => {
           'Reservar Refeição'}
         </TextButton>
       </ButtonOpacity>
+      </ContentQRCancel>
       <Modal 
         isVisible={isModalVisible}
         style={styles.modalContainer}
