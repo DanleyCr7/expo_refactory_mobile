@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
   },  
   btnLogin: {
     marginTop: 40,
+    width: WIDTH - 55,
   },
 });
 

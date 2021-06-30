@@ -24,9 +24,8 @@ const { width } = Dimensions.get('screen')
 const ConfirmModal = ({ date }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [info, setInfo] = useState('err');
-  const [canRequired, setCanRequired] = useState(true);
-  const [required, setRequired] = useState(true);
-  date = ['']
+  const [canRequired, setCanRequired] = useState(false);
+  const [required, setRequired] = useState(false);
   const apiGetData = async _ => {
     try {
       api.get('/students/1')
