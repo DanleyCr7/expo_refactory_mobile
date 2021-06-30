@@ -5,7 +5,7 @@ import {
   TouchableOpacity, 
   StyleSheet, 
 } from 'react-native';
-
+import { useSelector, useDispatch} from 'react-redux'
 import Icon from '@expo/vector-icons/MaterialIcons';
 import Swiper from 'react-native-swiper';
 
@@ -23,21 +23,26 @@ import { Box } from '../components/box';
 import { ButtonOpacityMenu } from '../components/buttonOpacityMenu';
 import { TextBox } from '../components/textBox';
 import SwiperContent from '../components/swiperContent';
+import ContainerSwiper from '../components/containerSwiper';
 import api from '../services/api';
-
-
-const Menu = _ => {
+import { addLunch } from '../store/fetchActions'
+export default function Menu () {
   const [data, setData] = useState([]);
-  
-  const apiGetData = async _ => {
-    try {
-      const resp = await api.get('/menu')
-      const data = resp.data;
-      setData(data);
-    } catch(err) {
-      console.log(err);
-    }
-  };
+  const dispatch = useDispatch();
+  const teste = useSelector(state=>state.lunch);
+  // const apiGetData = async _ => {
+  //   try {
+  //     const resp = await api.get('/menu')
+  //     const data = resp.data;
+  //     setData(data);
+  //   } catch(err) {
+  //     console.log(err);
+  //   }
+  // };
+  useEffect(_=>{
+    dispatch(addLunch())
+    console.log(teste)
+  },[])
   
   const getIndexSwipper = _ => {
     if(isMonday(new Date)) return 0;
@@ -55,60 +60,11 @@ const Menu = _ => {
 
   return (
     <Swiper loop={false} index={index} showsPagination={false}>
-      <Container>
-        <ButtonOpacityMenu style={styles.buttonContent}>
-          <TextBox style={styles.title}>Segunda</TextBox>
-        </ButtonOpacityMenu>
-        <SwiperContent 
-          dataLunch={data[0]} 
-          dataDinner={data[1]} 
-          date={index === 0}
-        />
-      </Container>
-
-      <Container>
-        <ButtonOpacityMenu style={styles.buttonContent}>
-          <TextBox style={styles.title}>Terca</TextBox>
-        </ButtonOpacityMenu>
-        <SwiperContent 
-          dataLunch={data[2]} 
-          dataDinner={data[3]} 
-          date={index === 1}
-        />
-      </Container>
-
-      <Container>
-        <ButtonOpacityMenu  style={styles.buttonContent}>
-          <TextBox style={styles.title}>Quarta</TextBox>
-        </ButtonOpacityMenu>
-        <SwiperContent 
-          dataLunch={data[4]} 
-          dataDinner={data[5]} 
-          date={index === 2}
-        />
-      </Container>
-
-      <Container>
-        <ButtonOpacityMenu activeOpacity={0.8} style={styles.buttonContent}>
-          <TextBox style={styles.title}>Quinta</TextBox>
-        </ButtonOpacityMenu >
-        <SwiperContent 
-          dataLunch={data[6]} 
-          dataDinner={data[7]} 
-          date={index === 3}
-        />
-      </Container>
-
-      <Container>
-        <ButtonOpacityMenu activeOpacity={0.8} style={styles.buttonContent}>
-          <TextBox style={styles.title}>Sexta</TextBox>
-        </ButtonOpacityMenu>
-        <SwiperContent 
-          dataLunch={data[8]} 
-          dataDinner={data[9]} 
-          date={index === 4}
-        />
-      </Container>
+      <ContainerSwiper day_of_the_week="Segunda" number={0} index={index}/>
+      <ContainerSwiper day_of_the_week="Terça" number={1}  index={index}/>
+      <ContainerSwiper day_of_the_week="Quarta" number={2}  index={index}/>
+      <ContainerSwiper day_of_the_week="Quinta" number={3}  index={index}/>
+      <ContainerSwiper day_of_the_week="Sexta" number={4}  index={index}/>
     </Swiper> 
   )
 }; 
@@ -127,5 +83,3 @@ const styles = StyleSheet.create({
     color: Colors.GREEN,
   },
 });
-
-export default Menu;
