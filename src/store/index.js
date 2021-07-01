@@ -1,7 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import lunchReducer from '../store/ducks/lunch'
+import lunchReducer from './ducks/lunch'
+import qrcodeReducer from  './ducks/QRcode'
 export default configureStore({
     reducer:{
-        lunch: lunchReducer
+        lunch: lunchReducer,
+        qrcode: qrcodeReducer,
     }
 })

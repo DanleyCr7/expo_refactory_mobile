@@ -39,10 +39,10 @@ export default function Menu () {
   //     console.log(err);
   //   }
   // };
-  useEffect(_=>{
-    dispatch(addLunch())
-    console.log(teste)
-  },[])
+    useEffect(_=>{
+      dispatch(addLunch())
+      console.log(teste)
+    },[])
   
   const getIndexSwipper = _ => {
     if(isMonday(new Date)) return 0;

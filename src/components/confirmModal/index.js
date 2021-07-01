@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  TextInput
 } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import styled from 'styled-components/native';
@@ -19,46 +20,55 @@ import { Colors } from '../../config/colors';
 import { TextInfo } from '../../config/textInfo';
 import { ContentQRCancel, ButtonIconQR } from '../contentQRcancel'
 import api from '../../services/api';
+import {useSelector, useDispatch} from 'react-redux'
+import {isCode} from '../../store/ducks/QRcode'
 const { width } = Dimensions.get('screen')
 
 const ConfirmModal = ({ date }) => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [info, setInfo] = useState('err');
-  const [canRequired, setCanRequired] = useState(false);
-  const [required, setRequired] = useState(false);
-  const apiGetData = async _ => {
-    try {
-      api.get('/students/1')
-      .then(resp => {
-        setCanRequired(resp.data.canRequiredMeal);
-        setRequired(resp.data.requiredMeal);
-      })
-    } catch(err) {
-      console.log(err);
-    }
-  };
+  const [info, setInfo] = useState('cancel');
+  const [canRequired, setCanRequired] = useState(true);
+  const [required, setRequired] = useState(true);
+  const scan = useSelector(state => state.qrcode.scan) 
+  const dispatch = useDispatch()
+  
+  const isScan=()=>{
+    dispatch(isCode(scan))
+  }
+  date = []
+  // const apiGetData = async _ => {
+  //   try {
+  //     api.get('/students/1')
+  //     .then(resp => {
+  //       setCanRequired(resp.data.canRequiredMeal);
+  //       setRequired(resp.data.requiredMeal);
+  //     })
+  //   } catch(err) {
+  //     console.log(err);
+  //   }
+  // };
 
-  const apiUpdateData = _ => {
-    if(date) {
-      try {
-        api.put('/students/required-meal/5cf98c572596950d0a70f89f')
-        .then(resp => {
-          setRequired(!required);
-          setInfo(required ? 'cancel' : 'info');
-        })
-        .catch(_ => {
-          setInfo('err')
-        })
-      } catch(err) {
-        console.log(err);
-      }
-    } else {
-      setInfo('warn');
-    }
-  };
+  // const apiUpdateData = _ => {
+  //   if(date) {
+  //     try {
+  //       api.put('/students/required-meal/5cf98c572596950d0a70f89f')
+  //       .then(resp => {
+  //         setRequired(!required);
+  //         setInfo(required ? 'cancel' : 'info');
+  //       })
+  //       .catch(_ => {
+  //         setInfo('err')
+  //       })
+  //     } catch(err) {
+  //       console.log(err);
+  //     }
+  //   } else {
+  //     setInfo('warn');
+  //   }
+  // };
 
   const onPress = _ => {
-    apiUpdateData();
+    // apiUpdateData();
     setModalVisible(true);
   };
 
@@ -72,9 +82,12 @@ const ConfirmModal = ({ date }) => {
   return (
     <>
     <ContentQRCancel cancel={(canRequired && required) && date}>
-      {(canRequired && required) && date? 
-      <ButtonIconQR>
-        <MaterialCommunityIcons name="qrcode-scan" size={30} color="#000"/>
+      {(canRequired && required) && date?
+      <ButtonIconQR onPress={isScan}>
+        <MaterialCommunityIcons 
+        name={scan? 'close': "qrcode-scan"}
+        size={30}
+        color={scan? '#f50a19': '#000'}/>
       </ButtonIconQR>: null }
       <ButtonOpacity
         style=
@@ -101,10 +114,20 @@ const ConfirmModal = ({ date }) => {
           <TextBox>
             {info === 'info' ? TextInfo.MODALOK : 
             info === 'err' ? TextInfo.MODALERR :
-            info === 'cancel' ? TextInfo.MODALCANCEL :
+            info === 'cancel' ? TextInfo.CANCELMEAL :
             TextInfo.MODALWARN}
           </TextBox>
-
+          {info === 'cancel'&& 
+          <>
+          <TextInput
+          style={styles.input}
+          numberOfLines={6}
+          placeholder="Motivo"/>
+          <ButtonOpacity style={styles.finishButton}>
+            <TextButton>Cancelar</TextButton>
+          </ButtonOpacity>
+          </>
+          }
           <TouchableOpacity
             style={styles.icon}
             onPress={onModalClose}>
@@ -133,6 +156,7 @@ const styles = StyleSheet.create({
   finishButton: {
     marginBottom: 5,
     backgroundColor: Colors.RED,
+    marginTop: 10
   },
   noAbleButton: {
     marginBottom: 5,
@@ -153,6 +177,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 5,
     right: 5,
+  },
+  input: {
+    backgroundColor: '#f7f7f7',
+    width: '80%',
+    marginTop: 10,
+    textAlign: 'left',
+    textAlignVertical: 'top'
   },
 });
 
