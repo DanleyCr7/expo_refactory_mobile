@@ -17,18 +17,20 @@ import isFriday from 'date-fns/isFriday';
 import isSaturday from 'date-fns/isSaturday';
 
 
-import { Colors } from '../config/colors';
-import { Container } from '../components/container'; 
-import { Box } from '../components/box';
-import { ButtonOpacityMenu } from '../components/buttonOpacityMenu';
-import { TextBox } from '../components/textBox';
-import SwiperContent from '../components/swiperContent';
-import ContainerSwiper from '../components/containerSwiper';
-import api from '../services/api';
-import { addLunch } from '../store/fetchActions'
+import { Colors } from '../../config/colors';
+import { Container } from '../../components/container'; 
+import { Box } from '../../components/box';
+import { ButtonOpacityMenu } from '../../components/buttonOpacityMenu';
+import { TextBox } from '../../components/textBox';
+import SwiperContent from '../../components/swiperContent';
+import ContainerSwiper from '../../components/containerSwiper';
+import api from '../../services/api';
+import { addLunch } from '../../store/fetchActions'
+import Avaliation from '../../components/avaliation';
 export default function Menu () {
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
+  const [modalRating, setModalRating] = useState(true)
   const teste = useSelector(state=>state.lunch);
   // const apiGetData = async _ => {
   //   try {
@@ -59,6 +61,8 @@ export default function Menu () {
   // }, []);
 
   return (
+    <>
+    {modalRating&& <Avaliation modalRating={modalRating} setModalRating={setModalRating}/> }
     <Swiper loop={false} index={index} showsPagination={false}>
       <ContainerSwiper day_of_the_week="Segunda" number={0} index={index}/>
       <ContainerSwiper day_of_the_week="Terça" number={1}  index={index}/>
@@ -66,6 +70,7 @@ export default function Menu () {
       <ContainerSwiper day_of_the_week="Quinta" number={3}  index={index}/>
       <ContainerSwiper day_of_the_week="Sexta" number={4}  index={index}/>
     </Swiper> 
+    </>
   )
 }; 
 

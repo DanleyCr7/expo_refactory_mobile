@@ -1,7 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const INITIAL_STATE = {
-    scan: true,
+    scan: false,
 }
 export const isCode = createAction('QRCODE');
 

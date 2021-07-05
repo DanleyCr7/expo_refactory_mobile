@@ -11,12 +11,12 @@ import {
 
 import Icon from '@expo/vector-icons/MaterialIcons';
 
-import logo from '../images/logo.png';
-import { Colors } from '../config/colors';
-import { Container } from '../components/container';
-import { TextBox } from '../components/textBox';
-import { TextButton } from '../components/textButton';
-import { ButtonOpacity } from '../components/buttonOpacity';
+import logo from '../../images/logo.png';
+import { Colors } from '../../config/colors';
+import { Container } from '../../components/container';
+import { TextBox } from '../../components/textBox';
+import { TextButton } from '../../components/textButton';
+import { ButtonOpacity } from '../../components/buttonOpacity';
 
 const { width: WIDTH } = Dimensions.get('window');
 

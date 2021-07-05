@@ -13,14 +13,14 @@ import setHours from 'date-fns/setHours';
 import addMinutes from 'date-fns/addMinutes';
 import isAfter from 'date-fns/isAfter';
 
-import { Container } from '../components/container';
-import { Box } from '../components/box';
-import { TextBox } from '../components/textBox';
-import { ButtonOpacity } from '../components/buttonOpacity';
-import ConfirmModal from '../components/confirmModal';
-import QRcode from '../components/cameraQR';
-import { Colors } from '../config/colors';
-import api from '../services/api';
+import { Container } from '../../components/container';
+import { Box } from '../../components/box';
+import { TextBox } from '../../components/textBox';
+import { ButtonOpacity } from '../../components/buttonOpacity';
+import ConfirmModal from '../../components/confirmModal';
+import QRcode from '../../components/cameraQR';
+import { Colors } from '../../config/colors';
+import api from '../../services/api';
 import axios from 'axios';
 
 const Hours = { 
@@ -45,7 +45,7 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
       { start: new Date, end: addMinutes(new Date, 1) },
     ),
   };
-  const [isReader, setisReader] = useState(true)
+  const [isReader, setisReader] = useState(false)
 
   return ( 
     <Box style={styles.descrip}>
@@ -56,7 +56,7 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
             <Text style={styles.title}>{dataLunch.title}</Text> 
             <Text style={styles.description}>{dataLunch.description}</Text>
           </>} 
-            <QRcode isReader={isReader}/>
+           <QRcode isReader={isReader}/>
         </ScrollView>
         <ConfirmModal date={mealHour.isLunch && date} />
       </>
@@ -66,7 +66,7 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
           !!dataDinner && <> 
             <Text style={styles.title}>{dataDinner.title}</Text> 
             <Text style={styles.description}>{dataDinner.description}</Text>
-            <QRcode isReader={isReader}/>
+           <QRcode isReader={isReader}/>
           </>
           } 
         </ScrollView>
