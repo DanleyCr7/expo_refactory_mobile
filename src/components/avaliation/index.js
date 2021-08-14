@@ -7,7 +7,7 @@ import { useState } from "react";
 export default function Avaliation({ modalRating, setModalRating }) {
     const [rating, setRating] = useState(0)
     return (
-        <Modal isVisible={modalRating}>
+        <Modal isVisible={false}>
             <View style={styles.container}>
                 <TouchableOpacity
                 style={styles.buttonIconClose}

@@ -22,6 +22,7 @@ import QRcode from '../../components/cameraQR';
 import { Colors } from '../../config/colors';
 import api from '../../services/api';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux'
 
 const Hours = { 
   lunch: {
@@ -35,6 +36,8 @@ const Hours = {
 };
 
 const Order = ({ dataLunch, dataDinner, meal, date }) => {
+  const menu = useSelector(state => state.lunch);
+  const scan = useSelector(state=> state.qrcode.scan)
   const mealHour = {
     isLunch: areIntervalsOverlapping(
       { start: Hours.lunch.start, end: Hours.lunch.end }, 
@@ -51,25 +54,25 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
     <Box style={styles.descrip}>
       {!!meal.lunch && meal.lunch ?
       <>
-        <ScrollView>{
-          !!dataLunch && <>
-            <Text style={styles.title}>{dataLunch.title}</Text> 
-            <Text style={styles.description}>{dataLunch.description}</Text>
-          </>} 
-           <QRcode isReader={isReader}/>
-        </ScrollView>
+          { !scan &&
+          <View style={styles.menu}>
+            <Text style={styles.title}>{menu?.title}</Text> 
+            <Text style={styles.descrip}>{menu?.description}</Text>
+          </View>
+          }
+          <QRcode isReader={isReader}/>
+        
         <ConfirmModal date={mealHour.isLunch && date} />
       </>
       :
-      <>
-        <ScrollView>{
-          !!dataDinner && <> 
-            <Text style={styles.title}>{dataDinner.title}</Text> 
-            <Text style={styles.description}>{dataDinner.description}</Text>
-           <QRcode isReader={isReader}/>
-          </>
-          } 
-        </ScrollView>
+      <>  
+         {!scan &&
+         <View style={styles.menu}> 
+            <Text style={styles.title}>{menu?.title}</Text> 
+            <Text style={styles.descrip}>{menu?.description}</Text>
+            </View>
+          }
+          <QRcode isReader={isReader}/>
         <ConfirmModal date={mealHour.isDinner && date} />
       </>
       }
@@ -78,19 +81,25 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
 };
 
 const styles = StyleSheet.create({
-  descrip: {
+  menu:{
     flex: 1,
-    borderRadius: 0,
-    borderTopColor: Colors.BGCONTAINER,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },  
+  descrip: {
+    borderTopColor: Colors.GREEN,
     borderBottomColor: 'transparent',
     paddingBottom: 0,
     marginBottom: 0,
-    alignItems: 'center',
+    textAlign: 'center',
+    fontSize: 16
   },
   title: {
-    fontSize: 16,
+    fontSize: 20,
     color: Colors.TEXTBOX,
-  }, 
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
 });
 
 export default Order;

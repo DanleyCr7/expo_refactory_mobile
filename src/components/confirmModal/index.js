@@ -21,51 +21,61 @@ import { TextInfo } from '../../config/textInfo';
 import { ContentQRCancel, ButtonIconQR } from '../contentQRcancel'
 import api from '../../services/api';
 import {useSelector, useDispatch} from 'react-redux'
-import {isCode} from '../../store/ducks/QRcode'
+import {isCode} from '../../store/ducks/QRcode';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('screen')
+import { setReserveID } from '../../store/fetchActions'
 
 const ConfirmModal = ({ date }) => {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [reason_for_cancellation, setReason_for_cancellation] = useState('');
   const [info, setInfo] = useState('cancel');
-  const [canRequired, setCanRequired] = useState(true);
-  const [required, setRequired] = useState(true);
-  const scan = useSelector(state => state.qrcode.scan) 
-  const dispatch = useDispatch()
-  
+  const [canRequired, setCanRequired] = useState(false);
+  const reserve = useSelector(state=> state.reserve);
+  const scan = useSelector(state => state.qrcode.scan);
+  const menu = useSelector(state => state.lunch);
+  const [student, setStudent] = useState({});
+  const dispatch = useDispatch();
   const isScan=()=>{
     dispatch(isCode(scan))
   }
   date = []
-  // const apiGetData = async _ => {
-  //   try {
-  //     api.get('/students/1')
-  //     .then(resp => {
-  //       setCanRequired(resp.data.canRequiredMeal);
-  //       setRequired(resp.data.requiredMeal);
-  //     })
-  //   } catch(err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  // const apiUpdateData = _ => {
-  //   if(date) {
-  //     try {
-  //       api.put('/students/required-meal/5cf98c572596950d0a70f89f')
-  //       .then(resp => {
-  //         setRequired(!required);
-  //         setInfo(required ? 'cancel' : 'info');
-  //       })
-  //       .catch(_ => {
-  //         setInfo('err')
-  //       })
-  //     } catch(err) {
-  //       console.log(err);
-  //     }
-  //   } else {
-  //     setInfo('warn');
-  //   }
-  // };
+  const apiGetStudentReserve = async _ => {
+    let data = await AsyncStorage.getItem('student');
+    let student = JSON.parse(data)
+    api.post(`/reserves/find/${student?._id}`, {id: menu._id}).
+    then(resp=>{
+      dispatch(setReserveID(resp.data));
+    }).catch(error=>{
+      console.log(error)
+    });
+  };
+  const reserveMeal = () => {
+    api.post(`/menu/reserve/${menu?._id}`, 
+      { id: student?._id}).then(async(resp)=>{
+      console.log(resp.data)
+      apiGetStudentReserve();
+    }).catch(erro=>{
+      console.log(erro)
+    })
+  }
+  const cancelMeal = () => {
+    if(reason_for_cancellation!=''){
+      console.log(reserve?._id, reason_for_cancellation)
+      api.put(`/reserves/cancel/${reserve?._id}`,{reason_for_cancellation: 'teste'})
+        .then(async(resp)=>{
+      
+        await apiGetStudentReserve();
+        onModalClose()
+      
+      }).catch(erro=>{
+        console.log(erro)
+      })
+    }else{
+      alert('Informe o motivo')
+    }
+    
+  }
 
   const onPress = _ => {
     // apiUpdateData();
@@ -75,33 +85,37 @@ const ConfirmModal = ({ date }) => {
   const onModalClose = _ => {
     setModalVisible(false);
   };
-
-  useEffect(_ => { 
-    // apiGetData()
+ 
+  useEffect(()=> { 
+    const isStudent = async()=>{
+      let student = await AsyncStorage.getItem('student');
+      setStudent(JSON.parse(student))
+    }
+    isStudent()
   }, []);
   return (
     <>
     <ContentQRCancel cancel={(canRequired && required) && date}>
-      {(canRequired && required) && date?
+      { reserve?.approved && !reserve?.cancel?
       <ButtonIconQR onPress={isScan}>
         <MaterialCommunityIcons 
         name={scan? 'close': "qrcode-scan"}
         size={30}
         color={scan? '#f50a19': '#000'}/>
-      </ButtonIconQR>: null }
+      </ButtonIconQR> : null}
       <ButtonOpacity
         style=
-          {!date ? styles.blockButton : 
-          !canRequired  ? styles.noAbleButton :
-          canRequired && required ? styles.finishButton :
-          styles.Button}
-        onPress={onPress}
+          {!date ? styles.blockButton :
+          reserve?.cancel?styles.blockButton :
+          reserve?.approved ? styles.finishButton :
+          styles.noAbleButton}
+          onPress={reserve?.approved ? onPress : reserveMeal }
+          disabled={reserve?.cancel}
       >
         <TextButton
-          style={date && !canRequired  ? {color: Colors.GREEN} : {}}  
+          style={ reserve?.approved ? {} : {color: Colors.GREEN} }  
         >
-          {(canRequired && required) && date ? 'Cancelar Reserva' :
-          'Reservar Refeição'}
+          {reserve?.cancel? 'Reserva cancelada' : reserve?.approved ? 'Cancelar Reserva': 'Reservar refeição'}
         </TextButton>
       </ButtonOpacity>
       </ContentQRCancel>
@@ -122,8 +136,10 @@ const ConfirmModal = ({ date }) => {
           <TextInput
           style={styles.input}
           numberOfLines={6}
+          onChangeText={setReason_for_cancellation}
+          value={reason_for_cancellation}
           placeholder="Motivo"/>
-          <ButtonOpacity style={styles.finishButton}>
+          <ButtonOpacity onPress={cancelMeal} style={styles.finishButton}>
             <TextButton>Cancelar</TextButton>
           </ButtonOpacity>
           </>
@@ -139,7 +155,7 @@ const ConfirmModal = ({ date }) => {
           </TouchableOpacity>
         </Box>
       </Modal>
-    </>      
+    </> 
   )
 };
 

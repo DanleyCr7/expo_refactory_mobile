@@ -1,14 +1,14 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {ButtonOpacityMenu} from '../buttonOpacityMenu';
 import SwiperContent from '../swiperContent';
 import { Container } from '../container'; 
 import { TextBox} from '../textBox';
-
+import api from '../../services/api'
 import styles from './styles';
 
 export default function containerSwiper({index, day_of_the_week, number}){
     const [data, setData] = useState([]);
-
+   
     return(
     <Container>
         <ButtonOpacityMenu style={styles.buttonContent}>

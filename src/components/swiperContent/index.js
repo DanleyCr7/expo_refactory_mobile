@@ -5,7 +5,6 @@ import {
   TouchableOpacity, 
   StyleSheet, 
 } from 'react-native';
-
 import { Container } from '../container'; 
 import { Box } from '../box';
 import { TextButton } from '../textButton';
@@ -17,11 +16,11 @@ import ConfirmModal from '../confirmModal';
 import { Colors } from '../../config/colors';
 import Order from '../../pages/order';
 
-const SwiperContent = ({ dataLunch, dataDinner, date }) => {
+const SwiperContent = ({  date }) => {
   const [isButtonActual, setIsButtonActual] = useState(true);
   const [warningMsg, setWarningMsg] = useState('10h');
   const [meal, setMeal] = useState({ lunch: true, dinner: false });
-
+  
   const _onPressActual = _ => {
       if(!isButtonActual) {
         setIsButtonActual(true);
@@ -65,7 +64,7 @@ const SwiperContent = ({ dataLunch, dataDinner, date }) => {
         <TextButton style={styles.warningText}>Pedidos encerram às {warningMsg}</TextButton>
       </ButtonOpacity>
 
-      <Order dataLunch={dataLunch} dataDinner={dataDinner} meal={meal} date={date} />
+      <Order meal={meal} date={date} />
     </Box>
   )
 };
@@ -102,6 +101,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     marginTop: 20,
     backgroundColor: 'transparent',
+    marginBottom: 4
   },
   warningText: {
     color: Colors.RED,
