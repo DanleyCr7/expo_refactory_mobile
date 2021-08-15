@@ -12,6 +12,7 @@ import { TextButtonMenu } from '../textButtonMenu';
 import { ButtonOpacity } from '../buttonOpacity';
 import { ButtonOpacityMenu } from '../buttonOpacityMenu';
 import ConfirmModal from '../confirmModal';
+import {useSelector, useDispatch} from 'react-redux'
 
 import { Colors } from '../../config/colors';
 import Order from '../../pages/order';
@@ -20,6 +21,7 @@ const SwiperContent = ({  date }) => {
   const [isButtonActual, setIsButtonActual] = useState(true);
   const [warningMsg, setWarningMsg] = useState('10h');
   const [meal, setMeal] = useState({ lunch: true, dinner: false });
+  const menu = useSelector(state => state.lunch);
   
   const _onPressActual = _ => {
       if(!isButtonActual) {
@@ -40,28 +42,19 @@ const SwiperContent = ({  date }) => {
   return (
     <Box style={styles.boxContainer}>
       <View style={styles.buttonContainer}>
-        <ButtonOpacityMenu 
+        <View 
           style={isButtonActual ? styles.buttonActual : styles.noButtonActual} 
           onPress={_onPressActual}
           >
           <TextButtonMenu 
             style={isButtonActual ? styles.textActual : styles.noTextActual}>
-            Almoço
+            {menu.type == 1? 'Jantar' : 'Almoço'}
           </TextButtonMenu>
-        </ButtonOpacityMenu>
-        
-        <ButtonOpacityMenu 
-          style={isButtonActual ? styles.noButtonActual : styles.buttonActual} 
-          onPress={_onPressNoActual}>
-          <TextButtonMenu 
-            style={isButtonActual ? styles.noTextActual : styles.textActual}>
-            Jantar
-          </TextButtonMenu>
-        </ButtonOpacityMenu>
+        </View>
       </View>
 
       <ButtonOpacity style={styles.warning} activeOpacity={0.8}>
-        <TextButton style={styles.warningText}>Pedidos encerram às {warningMsg}</TextButton>
+        <TextButton style={styles.warningText}>Pedidos encerram às {menu.type == 1 ? '20h' : '10h'}</TextButton>
       </ButtonOpacity>
 
       <Order meal={meal} date={date} />
@@ -80,8 +73,9 @@ const styles = StyleSheet.create({
   buttonActual: {
     borderBottomWidth: 2,
     borderBottomColor: Colors.GREEN,
-    width: 100,
+    width: '50%',
     marginHorizontal: 30,
+    marginTop: 8
   },
   noButtonActual: {
     backgroundColor: Colors.BGCONTAINER,
@@ -91,7 +85,7 @@ const styles = StyleSheet.create({
   },
   textActual: {
     color: Colors.GREEN,
-    fontSize: 16,
+    fontSize: 18,
   },
   noTextActual: {
     color: Colors.TRANSPARENT,

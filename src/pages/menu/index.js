@@ -45,6 +45,7 @@ const Menu=({route,navigation})=>{
     const { menu } = route.params;
     api.post(`/reserves/find/${student?._id}`, {id: menu._id}).
     then(resp=>{
+      console.log(resp.data)
       dispatch(setReserveID(resp.data));
     }).catch(error=>{
       console.log(error)
@@ -54,9 +55,9 @@ const Menu=({route,navigation})=>{
 
   useEffect(() => {
     const { menu } = route.params;
-    // let dateFormat = format(menu.date, 'dd/mm/yyyy')
-    // let date = format(dateFormat, 'EEEE')
-    setDiaSemana(menu.date)
+    let dateFormat = parse(menu.date, 'dd/mm/yyyy', new Date())
+    let date = format(dateFormat, 'EEEE')
+    setDiaSemana(date)
     isMenu(menu);
     apiGetStudentReserve()
   },[])
@@ -65,7 +66,7 @@ const Menu=({route,navigation})=>{
     <View style={styles.container}>
       {modalRating && <Avaliation modalRating={modalRating} setModalRating={setModalRating} />}
       <View style={styles.buttonContent}>
-          <TextBox style={styles.title}>{diaSemana}</TextBox>
+          <TextBox style={styles.title}>{translate(diaSemana)}</TextBox>
         </View>
         <SwiperContent 
           date={'26/10/2021'}

@@ -64,7 +64,7 @@ const ConfirmModal = ({ date }) => {
       console.log(reserve?._id, reason_for_cancellation)
       api.put(`/reserves/cancel/${reserve?._id}`,{reason_for_cancellation: 'teste'})
         .then(async(resp)=>{
-      
+          
         await apiGetStudentReserve();
         onModalClose()
       
@@ -96,26 +96,27 @@ const ConfirmModal = ({ date }) => {
   return (
     <>
     <ContentQRCancel cancel={(canRequired && required) && date}>
-      { reserve?.approved && !reserve?.cancel?
+      { reserve?.approved && !reserve?.cancel && reserve?.confirm!="sim"?
       <ButtonIconQR onPress={isScan}>
         <MaterialCommunityIcons 
         name={scan? 'close': "qrcode-scan"}
         size={30}
         color={scan? '#f50a19': '#000'}/>
       </ButtonIconQR> : null}
+      {/* Essas condições são para alterar a cor do botao e desabilitar ele caso caia na condicao de ser confirmado ou cancelado */}
       <ButtonOpacity
         style=
-          {!date ? styles.blockButton :
+          {reserve?.confirm=="sim"? styles.buttonConfirmReserve : !date ? styles.blockButton :
           reserve?.cancel?styles.blockButton :
           reserve?.approved ? styles.finishButton :
           styles.noAbleButton}
           onPress={reserve?.approved ? onPress : reserveMeal }
-          disabled={reserve?.cancel}
+          disabled={reserve?.confirm=="sim"? true: reserve?.cancel}
       >
         <TextButton
           style={ reserve?.approved ? {} : {color: Colors.GREEN} }  
         >
-          {reserve?.cancel? 'Reserva cancelada' : reserve?.approved ? 'Cancelar Reserva': 'Reservar refeição'}
+          {reserve?.confirm=="sim"? 'Reserva feita' : reserve?.cancel? 'Reserva cancelada' : reserve?.approved ? 'Cancelar Reserva': 'Reservar refeição'}
         </TextButton>
       </ButtonOpacity>
       </ContentQRCancel>
@@ -179,6 +180,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: Colors.GREEN,
     borderWidth: 1,
+    color: Colors.GREEN,
+  },
+  buttonConfirmReserve: {
+    marginBottom: 5,
+    backgroundColor: Colors.GREEN,
     color: Colors.GREEN,
   },
   modalContainer: {

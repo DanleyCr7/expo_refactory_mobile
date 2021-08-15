@@ -52,7 +52,7 @@ export const ListMeal =({ navigation })=> {
                                 <Text style={styles.description}>{item.description}</Text>
                             {/* view que contem a data e a informacao do almoço*/}
                             <View style={styles.meal}>
-                                <Text style={styles.textDate}>{item.date}</Text>
+                                <Text style={styles.textDate}>{translate(format(parse(item.date, 'dd/mm/yyyy', new Date()), 'EEEE'))}</Text>
 
                                 <View style={styles.contenTextMeal}>
                                     <Text style={styles.textMeal}>{item.type == 1? 'Jantar' : 'Almoço'}</Text>
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
          flexDirection: 'row',
          justifyContent: 'space-between',
          borderRadius: 8,
-         borderBottomColor: '#fff',
-         borderBottomWidth: 0.4,
+         borderBottomColor: '#666',
+         borderBottomWidth: 0.3,
          marginBottom: 3,
          paddingVertical: 10,
          paddingHorizontal: 4,
