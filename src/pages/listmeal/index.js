@@ -26,7 +26,6 @@ export const ListMeal =({ navigation })=> {
     };
     useEffect(_ => {
         apiGetData();
-        translate()
     }, []);
 
     const getMeal= async (id)=>{
@@ -53,7 +52,7 @@ export const ListMeal =({ navigation })=> {
                                 <Text style={styles.description}>{item.description}</Text>
                             {/* view que contem a data e a informacao do almoço*/}
                             <View style={styles.meal}>
-                                <Text style={styles.textDate}>{translate(format(parse(item.date, 'dd/mm/yyyy', new Date()), 'EEEE'))}</Text>
+                                <Text style={styles.textDate}>{item.date}</Text>
 
                                 <View style={styles.contenTextMeal}>
                                     <Text style={styles.textMeal}>{item.type == 1? 'Jantar' : 'Almoço'}</Text>

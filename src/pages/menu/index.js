@@ -54,9 +54,9 @@ const Menu=({route,navigation})=>{
 
   useEffect(() => {
     const { menu } = route.params;
-    let dateFormat = parse(menu.date, 'dd/mm/yyyy', new Date())
-    let date = format(dateFormat, 'EEEE')
-    setDiaSemana(date)
+    // let dateFormat = format(menu.date, 'dd/mm/yyyy')
+    // let date = format(dateFormat, 'EEEE')
+    setDiaSemana(menu.date)
     isMenu(menu);
     apiGetStudentReserve()
   },[])
@@ -65,7 +65,7 @@ const Menu=({route,navigation})=>{
     <View style={styles.container}>
       {modalRating && <Avaliation modalRating={modalRating} setModalRating={setModalRating} />}
       <View style={styles.buttonContent}>
-          <TextBox style={styles.title}>{translate(diaSemana)}</TextBox>
+          <TextBox style={styles.title}>{diaSemana}</TextBox>
         </View>
         <SwiperContent 
           date={'26/10/2021'}
