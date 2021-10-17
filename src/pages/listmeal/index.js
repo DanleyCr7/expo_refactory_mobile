@@ -13,15 +13,19 @@ import logo from '../../images/logo.png';
 import { Colors } from '../../config/colors';
 import { format, parse  } from 'date-fns'
 import { translate } from '../../config/textWeekDay';
+import { showMessage } from 'react-native-flash-message';
 export const ListMeal =({ navigation })=> {
     const [data, setData] = useState([]);
 
     const apiGetData = async _ => {
         try {
             const resp = await api.get('/menu')
-            setData(resp.data);
+            // setData(resp.data);
         } catch (err) {
-            console.log(err);
+         showMessage({
+            message: "Aconteceu algum erro.",
+            type: "danger",
+         });
         }
     };
     useEffect(_ => {
@@ -35,7 +39,10 @@ export const ListMeal =({ navigation })=> {
                 menu: resp.data
             });
         } catch (err) {
-            console.log(err);
+            showMessage({
+                message: "Aconteceu algum erro.",
+                type: "danger",
+            });
         }
     }
     return (

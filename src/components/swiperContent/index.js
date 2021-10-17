@@ -26,7 +26,7 @@ const SwiperContent = ({  date }) => {
   const _onPressActual = _ => {
       if(!isButtonActual) {
         setIsButtonActual(true);
-        setWarningMsg('10h');
+        setWarningMsg(menu.deadline);
         setMeal({ lunch: true, dinner: false });
       }
     };

@@ -4,6 +4,9 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  RefreshControl,
+  ScrollView,
+  SafeAreaView
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
 import Icon from '@expo/vector-icons/MaterialIcons';
@@ -32,38 +35,77 @@ import { format, parse  } from 'date-fns';
 
 import { translate } from '../../config/textWeekDay'
 
-const Menu=({route,navigation})=>{
+const Menu=({navigation})=>{
   const dispatch = useDispatch();
   const [modalRating, setModalRating] = useState(true)
+  const [refreshing, setRefreshing] = React.useState(false);
   const [diaSemana, setDiaSemana] = useState('')
-  const isMenu=(item_menu)=>{
+  const [menu, setMenu] = useState({});
+ 
+  const isMenu = (item_menu) => {
     dispatch(addLunch(item_menu))
   }
+
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => {
+      getMenu();
+      setRefreshing(false)
+    });
+  }, []);
+
   const apiGetStudentReserve = async _ => {
     let data = await AsyncStorage.getItem('student');
     let student = JSON.parse(data)
-    const { menu } = route.params;
-    api.post(`/reserves/find/${student?._id}`, {id: menu._id}).
+    api.post(`/reserves/find/${student?._id}`, {id: menu?._id}).
     then(resp=>{
-      console.log(resp.data)
       dispatch(setReserveID(resp.data));
     }).catch(error=>{
-      console.log(error)
+      showMessage({
+        message: "Aconteceu algum erro.",
+        type: "danger",
+      });
     });
   
   };
 
+  const getMenu = () => {
+    api.get('/menu').then(resp => {
+      let menu = resp.data
+      menu?.date ?
+        setDiaSemana(format(parse(menu?.date, 'dd/mm/yyyy', new Date()), 'EEEE'))
+        : ''
+      isMenu(menu);
+      setMenu(menu);
+
+    }).catch(erro=>{
+     showMessage({
+            message: "Aconteceu algum erro.",
+            type: "danger",
+      });
+   })
+  }
+  
   useEffect(() => {
-    const { menu } = route.params;
-    let dateFormat = parse(menu.date, 'dd/mm/yyyy', new Date())
-    let date = format(dateFormat, 'EEEE')
-    setDiaSemana(date)
-    isMenu(menu);
-    apiGetStudentReserve()
+   getMenu();  
+   apiGetStudentReserve()
   },[])
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
       {modalRating && <Avaliation modalRating={modalRating} setModalRating={setModalRating} />}
       <View style={styles.buttonContent}>
           <TextBox style={styles.title}>{translate(diaSemana)}</TextBox>
@@ -71,7 +113,8 @@ const Menu=({route,navigation})=>{
         <SwiperContent 
           date={'26/10/2021'}
         />
-    </View>
+        </ScrollView>
+    </SafeAreaView>
   )
 };
 export default Menu;
@@ -83,6 +126,13 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     alignItems: 'center'
   },
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'pink',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
   buttonContent: {
     width: 100,
     borderWidth: 2,

@@ -21,17 +21,28 @@ import api from '../../services/api'
 import { setStudent } from '../../store/fetchActions/index'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 const { width: WIDTH } = Dimensions.get('window');
+import { showMessage } from "react-native-flash-message";
 
 const Login = ({ navigation }) => {
   const [code, setCode] = useState('');
 
-  const login =()=>{
-    api.post('/login', {code}).then(async(resp)=>{
-      await AsyncStorage.setItem('student', JSON.stringify(resp.data));
-      navigation.navigate('ListMeal')
-    }).catch(error=>{
-        console.log(error)
-    })
+  const login = () => {
+     api.post('/login', {code}).then(async(resp)=>{
+        await AsyncStorage.setItem('student', JSON.stringify(resp.data));
+        resp?.data ?
+          navigation.navigate('Menu') :
+          showMessage({
+            message: "Matricula incorreta",
+            type: "danger",
+          });
+          
+  
+     }).catch(error=>{
+         showMessage({
+            message: "Ops, verifique sua conexão!",
+            type: "danger",
+          });
+     })
   }
 
   return (

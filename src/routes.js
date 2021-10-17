@@ -21,10 +21,10 @@ const AppRoutes = () => (
           name="Capus Parnaíba"
           component={LoginScreen}
          />
-        <Stack.Screen 
+        {/* <Stack.Screen 
            name="ListMeal"
            component={ListMeal}
-       />
+       /> */}
         <Stack.Screen 
             name="Order"
             component={OrderScreen}

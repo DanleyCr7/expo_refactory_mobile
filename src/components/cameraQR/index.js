@@ -4,6 +4,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import api from '../../services/api';
 import {useSelector, useDispatch} from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showMessage } from 'react-native-flash-message';
 
 const {width, height} = Dimensions.get('window')
 export default function App() {
@@ -25,7 +26,10 @@ export default function App() {
     api.get('/qrcode').then(response=>{
       setPathCode(response.data)
     }).catch(error=>{
-      console.log(error)
+      showMessage({
+         message: "Aconteceu algum erro.",
+         type: "danger",
+      });
     })
   },[])
 
@@ -36,21 +40,25 @@ export default function App() {
     then(resp=>{
       dispatch(setReserveID(resp.data));
     }).catch(error=>{
-      console.log(error)
+      showMessage({
+        message: "Aconteceu algum erro.",
+        type: "danger",
+      });
     });
   };
   const handleBarCodeScanned = ({ type, data }) => {
     api.post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode }).then(resp=>{
       apiGetStudentReserve()
-      console.log(resp.data)
       alert(`Reserva feita!`);
 
     }).catch(error=>{
-      console.log(error)
+       showMessage({
+            message: "Falha ao fazer reserva.",
+            type: "danger",
+      });
     })
     setScanned(true);
     alert(`${reserve._id} code ${pathCode} has been scanned! `);
-    console.log(data)
     setTimeout(()=>{
       setScanned(false)
     }, 2000)

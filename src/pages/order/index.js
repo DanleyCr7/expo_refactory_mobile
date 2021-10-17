@@ -35,7 +35,7 @@ const Hours = {
   },
 };
 
-const Order = ({ dataLunch, dataDinner, meal, date }) => {
+const Order = ({ meal, date }) => {
   const menu = useSelector(state => state.lunch);
   const scan = useSelector(state=> state.qrcode.scan)
   const mealHour = {
@@ -56,8 +56,8 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
       <>
           { !scan &&
           <View style={styles.menu}>
-            <Text style={styles.title}>{menu?.title}</Text> 
-            <Text style={styles.descrip}>{menu?.description}</Text>
+            <Text style={styles.title}>{menu?.title ?? 'Sem cardápio'}</Text> 
+            <Text style={styles.descrip}>{menu?.description ?? 'Sem refeição para o dia de hoje'}</Text>
           </View>
           }
           <QRcode isReader={isReader}/>
@@ -68,8 +68,8 @@ const Order = ({ dataLunch, dataDinner, meal, date }) => {
       <>  
          {!scan &&
          <View style={styles.menu}> 
-            <Text style={styles.title}>{menu?.title}</Text> 
-            <Text style={styles.descrip}>{menu?.description}</Text>
+            <Text style={styles.title}>{menu?.title ?? 'Sem cardápio'}</Text> 
+            <Text style={styles.descrip}>{menu?.description ?? 'Sem refeição para o dia de hoje'}</Text>
             </View>
           }
           <QRcode isReader={isReader}/>

@@ -5,12 +5,14 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  Alert
 } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import styled from 'styled-components/native';
 import Icon from '@expo/vector-icons/MaterialIcons';
 import Modal from 'react-native-modal';
+import { showMessage } from "react-native-flash-message";
 
 import { Box } from '../box';
 import { TextBox } from  '../textBox';
@@ -31,6 +33,7 @@ const ConfirmModal = ({ date }) => {
   const [reason_for_cancellation, setReason_for_cancellation] = useState('');
   const [info, setInfo] = useState('cancel');
   const [canRequired, setCanRequired] = useState(false);
+  const [menuEmpty, setMenuEmpty] = useState(false);
   const reserve = useSelector(state=> state.reserve);
   const scan = useSelector(state => state.qrcode.scan);
   const menu = useSelector(state => state.lunch);
@@ -46,22 +49,29 @@ const ConfirmModal = ({ date }) => {
     api.post(`/reserves/find/${student?._id}`, {id: menu._id}).
     then(resp=>{
       dispatch(setReserveID(resp.data));
-    }).catch(error=>{
-      console.log(error)
+    }).catch(error => {
+        showMessage({
+            message: "Não temos refeição para hoje.",
+            type: "danger",
+          });
     });
   };
   const reserveMeal = () => {
     api.post(`/menu/reserve/${menu?._id}`, 
       { id: student?._id}).then(async(resp)=>{
-      console.log(resp.data)
+       let message = resp.data?.message 
+       if(message){
+         showMessage({
+            message: `${message}`,
+            type: "danger",
+          });
+       }
       apiGetStudentReserve();
     }).catch(erro=>{
-      console.log(erro)
     })
   }
   const cancelMeal = () => {
     if(reason_for_cancellation!=''){
-      console.log(reserve?._id, reason_for_cancellation)
       api.put(`/reserves/cancel/${reserve?._id}`,{reason_for_cancellation: 'teste'})
         .then(async(resp)=>{
           
@@ -69,13 +79,19 @@ const ConfirmModal = ({ date }) => {
         onModalClose()
       
       }).catch(erro=>{
-        console.log(erro)
       })
     }else{
       alert('Informe o motivo')
     }
     
   }
+
+   function isEmptyObject(obj)
+   {
+     let menuIsEmpty = Object.keys(obj).length === 0;
+     setMenuEmpty(menuIsEmpty);
+   }
+  
 
   const onPress = _ => {
     // apiUpdateData();
@@ -91,7 +107,9 @@ const ConfirmModal = ({ date }) => {
       let student = await AsyncStorage.getItem('student');
       setStudent(JSON.parse(student))
     }
-    isStudent()
+    isStudent();
+
+    isEmptyObject(menu);
   }, []);
   return (
     <>
@@ -106,17 +124,23 @@ const ConfirmModal = ({ date }) => {
       {/* Essas condições são para alterar a cor do botao e desabilitar ele caso caia na condicao de ser confirmado ou cancelado */}
       <ButtonOpacity
         style=
-          {reserve?.confirm=="sim"? styles.buttonConfirmReserve : !date ? styles.blockButton :
-          reserve?.cancel?styles.blockButton :
+          {
+          //verificando se existe cardapio
+          menuEmpty ? styles.blockButton :
+          reserve?.confirm == "sim" ? styles.buttonConfirmReserve : !date ? styles.blockButton :
+          reserve?.cancel ? styles.blockButton :
           reserve?.approved ? styles.finishButton :
           styles.noAbleButton}
-          onPress={reserve?.approved ? onPress : reserveMeal }
-          disabled={reserve?.confirm=="sim"? true: reserve?.cancel}
+          onPress={reserve?.approved ? onPress : reserveMeal}
+          disabled={menuEmpty ? true : reserve?.confirm=="sim" ? true: reserve?.cancel}
       >
         <TextButton
           style={ reserve?.approved ? {} : {color: Colors.GREEN} }  
         >
-          {reserve?.confirm=="sim"? 'Reserva feita' : reserve?.cancel? 'Reserva cancelada' : reserve?.approved ? 'Cancelar Reserva': 'Reservar refeição'}
+            {reserve?.confirm == "sim" ? 'Reserva feita'
+              : reserve?.cancel ? 'Reserva cancelada' :
+                reserve?.approved ? 'Cancelar Reserva' :
+                  'Reservar refeição'}
         </TextButton>
       </ButtonOpacity>
       </ContentQRCancel>
