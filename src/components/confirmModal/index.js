@@ -51,14 +51,18 @@ const ConfirmModal = ({ date }) => {
       dispatch(setReserveID(resp.data));
     }).catch(error => {
         showMessage({
-            message: "Não temos refeição para hoje.",
+            message: "Aconteceu algum erro.",
             type: "danger",
           });
     });
   };
   const reserveMeal = () => {
     api.post(`/menu/reserve/${menu?._id}`, 
-      { id: student?._id}).then(async(resp)=>{
+      { id: student?._id }).then(async (resp) => {
+         showMessage({
+            message: `${message}`,
+            type: "success",
+          });
        let message = resp.data?.message 
        if(message){
          showMessage({
@@ -80,8 +84,11 @@ const ConfirmModal = ({ date }) => {
       
       }).catch(erro=>{
       })
-    }else{
-      alert('Informe o motivo')
+    } else {
+      showMessage({
+            message: `Informe o motivo`,
+            type: "warning",
+        });
     }
     
   }
