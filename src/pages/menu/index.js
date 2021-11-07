@@ -41,6 +41,7 @@ const Menu=({navigation})=>{
   const [refreshing, setRefreshing] = React.useState(false);
   const [diaSemana, setDiaSemana] = useState('')
   const [menu, setMenu] = useState({});
+  const reserve = useSelector(state=> state.reserve);
  
   const isMenu = (item_menu) => {
     dispatch(addLunch(item_menu))
@@ -73,9 +74,9 @@ const Menu=({navigation})=>{
   
   };
 
-  const getMenu = () => {
-    api.get('/menu').then(resp => {
-      let menu = resp.data
+  const getMenu = async () => {
+   await api.get('/menu').then(resp => {
+      const menu = resp.data
       menu?.date ?
         setDiaSemana(format(parse(menu?.date, 'dd/mm/yyyy', new Date()), 'EEEE'))
         : ''
@@ -92,7 +93,8 @@ const Menu=({navigation})=>{
   
   useEffect(() => {
    getMenu();  
-   apiGetStudentReserve()
+    apiGetStudentReserve()
+    
   },[])
   
   return (
@@ -128,9 +130,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: 'pink',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: 20
   },
   
   buttonContent: {

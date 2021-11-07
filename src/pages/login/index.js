@@ -27,10 +27,12 @@ const Login = ({ navigation }) => {
   const [code, setCode] = useState('');
 
   const login = () => {
-     api.post('/login', {code}).then(async(resp)=>{
-        await AsyncStorage.setItem('student', JSON.stringify(resp.data));
-        resp?.data ?
-          navigation.navigate('Menu') :
+    api.post('/login/student', { code }).then(async (resp) => {
+       await AsyncStorage.setItem('student', JSON.stringify(resp.data));
+       resp?.data ? (
+          navigation.navigate('Menu')
+        
+        ) :
           showMessage({
             message: "Matricula incorreta",
             type: "danger",
@@ -39,7 +41,7 @@ const Login = ({ navigation }) => {
   
      }).catch(error=>{
          showMessage({
-            message: "Ops, verifique sua conexão!",
+            message: "Ops, verifique sua conexão com a internet!",
             type: "danger",
           });
      })

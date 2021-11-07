@@ -37,15 +37,15 @@ const ConfirmModal = ({ date }) => {
   const reserve = useSelector(state=> state.reserve);
   const scan = useSelector(state => state.qrcode.scan);
   const menu = useSelector(state => state.lunch);
-  const [student, setStudent] = useState({});
   const dispatch = useDispatch();
   const isScan=()=>{
     dispatch(isCode(scan))
   }
   date = []
   const apiGetStudentReserve = async _ => {
-    let data = await AsyncStorage.getItem('student');
-    let student = JSON.parse(data)
+    const data = await AsyncStorage.getItem('student');
+    const student = JSON.parse(data);
+
     api.post(`/reserves/find/${student?._id}`, {id: menu._id}).
     then(resp=>{
       dispatch(setReserveID(resp.data));
@@ -56,8 +56,10 @@ const ConfirmModal = ({ date }) => {
           });
     });
   };
-  const reserveMeal = () => {
-    api.post(`/menu/reserve/${menu?._id}`, 
+  const reserveMeal = async () => {
+    const data = await AsyncStorage.getItem('student');
+    const student = JSON.parse(data)
+    api.post(`/menu/reserve/${menu?._id}`,
       { id: student?._id }).then(async (resp) => {
          showMessage({
             message: `${message}`,
@@ -93,9 +95,9 @@ const ConfirmModal = ({ date }) => {
     
   }
 
-   function isEmptyObject(obj)
+  function isEmptyObject(obj)
    {
-     let menuIsEmpty = Object.keys(obj).length === 0;
+     const menuIsEmpty = Object.keys(obj).length === 0;
      setMenuEmpty(menuIsEmpty);
    }
   
@@ -109,15 +111,10 @@ const ConfirmModal = ({ date }) => {
     setModalVisible(false);
   };
  
-  useEffect(()=> { 
-    const isStudent = async()=>{
-      let student = await AsyncStorage.getItem('student');
-      setStudent(JSON.parse(student))
-    }
-    isStudent();
-
+  useEffect(() => {
+    apiGetStudentReserve();
     isEmptyObject(menu);
-  }, []);
+  }, [menu]);
   return (
     <>
     <ContentQRCancel cancel={(canRequired && required) && date}>
@@ -147,7 +144,8 @@ const ConfirmModal = ({ date }) => {
             {reserve?.confirm == "sim" ? 'Reserva feita'
               : reserve?.cancel ? 'Reserva cancelada' :
                 reserve?.approved ? 'Cancelar Reserva' :
-                  'Reservar refeição'}
+                  menuEmpty ? "Sem refeição"
+                  :  'Reservar refeição'}
         </TextButton>
       </ButtonOpacity>
       </ContentQRCancel>

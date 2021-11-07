@@ -5,13 +5,12 @@ import api from '../../services/api';
 import {useSelector, useDispatch} from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
-import {isCode} from '../../store/ducks/QRcode';
 
 const {width, height} = Dimensions.get('window')
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const scan = useSelector(state => state.qrcode.scan);
+  const scan = useSelector(state => state.qrcode.scan) 
   const reserve = useSelector(state=> state.reserve);
   const [pathCode, setPathCode] = useState('esperando')
   const dispatch = useDispatch();
@@ -48,18 +47,26 @@ export default function App() {
     });
   };
   const handleBarCodeScanned = ({ type, data }) => {
-    api.post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode }).then(resp=>{
-      apiGetStudentReserve()
-      dispatch(isCode(scan))
-      alert(`Reserva feita!`);
+    alert('Oii');
+    // showMessage({
+    //         message: "Testando QRCODE.",
+    //         type: "success",
+    // });
+    // api.post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode }).then(resp=>{
+    //   apiGetStudentReserve()
+    //   alert(`Reserva feita!`);
 
-    }).catch(error=>{
-      alert(`Ops, houve algum erro!`);
-    })
-    setScanned(true);
-    setTimeout(()=>{
-      setScanned(false)
-    }, 2000)
+    // }).catch(error=>{
+    //    showMessage({
+    //         message: "Falha ao fazer reserva.",
+    //         type: "danger",
+    //   });
+    // })
+    // setScanned(true);
+    // alert(`${reserve._id} code ${pathCode} has been scanned! `);
+    // setTimeout(()=>{
+    //   setScanned(false)
+    // }, 2000)
   };
 
   if (hasPermission === null) {
@@ -71,8 +78,8 @@ export default function App() {
   if(!scan) return null
   return (    
       <BarCodeScanner
-        onBarCodeScanned={scanned ? null :handleBarCodeScanned}
-        style={{width: width-50, height: height-250, marginTop: 20}}
+        onBarCodeScanned={handleBarCodeScanned}
+        style={{width: width, height: height-250, marginTop: 20}}
       />
   );
 }
