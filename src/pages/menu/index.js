@@ -41,7 +41,8 @@ const Menu=({navigation})=>{
   const [refreshing, setRefreshing] = React.useState(false);
   const [diaSemana, setDiaSemana] = useState('')
   const [menu, setMenu] = useState({});
-  const reserve = useSelector(state=> state.reserve);
+  const scan = useSelector(state => state.qrcode.scan);
+  
  
   const isMenu = (item_menu) => {
     dispatch(addLunch(item_menu))
@@ -92,10 +93,10 @@ const Menu=({navigation})=>{
   }
   
   useEffect(() => {
-   getMenu();  
+    getMenu();  
     apiGetStudentReserve()
     
-  },[])
+  }, [scan])
   
   return (
     <SafeAreaView style={styles.container}>
