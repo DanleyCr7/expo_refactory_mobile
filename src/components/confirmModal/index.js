@@ -131,7 +131,7 @@ const ConfirmModal = ({ date }) => {
           {
           //verificando se existe cardapio
           menuEmpty ? styles.blockButton :
-          reserve?.confirm == "sim" ? styles.buttonConfirmReserve : !date ? styles.blockButton :
+          reserve?.confirm == "sim" ? styles.blockButton : !date ? styles.blockButton :
           reserve?.cancel ? styles.blockButton :
           reserve?.approved ? styles.finishButton :
           styles.noAbleButton}
@@ -141,7 +141,7 @@ const ConfirmModal = ({ date }) => {
         <TextButton
           style={ reserve?.approved ? {} : {color: Colors.GREEN} }  
         >
-            {reserve?.confirm == "sim" ? 'Reserva feita'
+            {reserve?.confirm == "sim" ? 'Presença confirmada'
               : reserve?.cancel ? 'Reserva cancelada' :
                 reserve?.approved ? 'Cancelar Reserva' :
                   menuEmpty ? "Sem refeição"

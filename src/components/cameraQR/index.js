@@ -12,7 +12,8 @@ export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const scan = useSelector(state => state.qrcode.scan);
-  const reserve = useSelector(state=> state.reserve);
+  const reserve = useSelector(state => state.reserve);
+  const menu = useSelector(state => state.lunch);
   const [pathCode, setPathCode] = useState('esperando')
   const dispatch = useDispatch();
 
@@ -34,27 +35,19 @@ export default function App() {
     })
   },[])
 
-  const apiGetStudentReserve = async _ => {
-    let data = await AsyncStorage.getItem('student');
-    let student = JSON.parse(data)
-    api.post(`/reserves/find/${student?._id}`, {id: menu._id}).
-    then(resp=>{
-      dispatch(setReserveID(resp.data));
+  const handleBarCodeScanned = ({ type, data }) => {
+    api.post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode }).then(resp=>{
+      dispatch(isCode(scan))
+      showMessage({
+        message: "Presença confirmada.",
+        type: "success",
+      });
+
     }).catch(error=>{
       showMessage({
         message: "Aconteceu algum erro.",
         type: "danger",
       });
-    });
-  };
-  const handleBarCodeScanned = ({ type, data }) => {
-    api.post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode }).then(resp=>{
-      apiGetStudentReserve()
-      dispatch(isCode(scan))
-      alert(`Reserva feita!`);
-
-    }).catch(error=>{
-      alert(`Ops, houve algum erro!`);
     })
     setScanned(true);
     setTimeout(()=>{
