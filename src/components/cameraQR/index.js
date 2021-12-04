@@ -1,58 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Dimensions } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import api from '../../services/api';
-import {useSelector, useDispatch} from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { showMessage } from 'react-native-flash-message';
-import {isCode} from '../../store/ducks/QRcode';
+import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, Button, Dimensions } from "react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
+import api from "../../services/api";
+import { useSelector, useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showMessage } from "react-native-flash-message";
+import { isCode } from "../../store/ducks/QRcode";
 
-const {width, height} = Dimensions.get('window')
+const { width, height } = Dimensions.get("window");
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const scan = useSelector(state => state.qrcode.scan);
-  const reserve = useSelector(state => state.reserve);
-  const menu = useSelector(state => state.lunch);
-  const [pathCode, setPathCode] = useState('esperando')
+  const scan = useSelector((state) => state.qrcode.scan);
+  const reserve = useSelector((state) => state.reserve);
+  const menu = useSelector((state) => state.lunch);
+  const [pathCode, setPathCode] = useState("esperando");
   const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      setHasPermission(status === "granted");
     })();
   }, []);
 
-  useEffect(()=>{
-    api.get('/qrcode').then(response=>{
-      setPathCode(response.data)
-    }).catch(error=>{
-      showMessage({
-         message: "Aconteceu algum erro.",
-         type: "danger",
+  useEffect(() => {
+    api
+      .get("/qrcode")
+      .then((response) => {
+        setPathCode(response.data);
+      })
+      .catch((error) => {
+        showMessage({
+          message: "Aconteceu algum erro.",
+          type: "danger",
+        });
       });
-    })
-  },[])
+  }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
-    api.post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode }).then(resp=>{
-      dispatch(isCode(scan))
-      showMessage({
-        message: "Presença confirmada.",
-        type: "success",
+  const verificarPresenca = async () => {
+    let data = await AsyncStorage.getItem("student");
+    let student = JSON.parse(data);
+    await api
+      .post(`/verificar/presenca`, { id_student: student._id })
+      .then()
+      .catch((error) => {
+        showMessage({
+          message: "Aconteceu algum erro.",
+          type: "danger",
+        });
       });
+  };
 
-    }).catch(error=>{
-      showMessage({
-        message: "Aconteceu algum erro.",
-        type: "danger",
+  const handleBarCodeScanned = async ({ type, data }) => {
+    api
+      .post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode })
+      .then(async () => {
+        dispatch(isCode(scan));
+        showMessage({
+          message: "Presença confirmada.",
+          type: "success",
+        });
+        await verificarPresenca();
+      })
+      .catch((error) => {
+        showMessage({
+          message: "Aconteceu algum erro.",
+          type: "danger",
+        });
       });
-    })
     setScanned(true);
-    setTimeout(()=>{
-      setScanned(false)
-    }, 2000)
+    setTimeout(() => {
+      setScanned(false);
+    }, 2000);
   };
 
   if (hasPermission === null) {
@@ -61,13 +81,11 @@ export default function App() {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
-  if(!scan) return null
-  return (    
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? null :handleBarCodeScanned}
-        style={{width: width-50, height: height-250, marginTop: 20}}
-      />
+  if (!scan) return null;
+  return (
+    <BarCodeScanner
+      onBarCodeScanned={scanned ? null : handleBarCodeScanned}
+      style={{ width: width - 50, height: height - 250, marginTop: 20 }}
+    />
   );
 }
-
-

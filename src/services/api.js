@@ -1,8 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  // baseURL: 'https://ifpi-refeitorio.herokuapp.com'
-  baseURL: 'http://192.168.18.6:3333'
+  // baseURL: "http://ifpiparnaiba.edu.br/node/node",
+  baseURL: "https://ifpi-refeitorio.herokuapp.com/node",
+  // baseURL: 'http://192.168.18.6:3333'
 });
 
 export default api;
