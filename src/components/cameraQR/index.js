@@ -44,12 +44,7 @@ export default function App() {
     await api
       .post(`/verificar/presenca`, { id_student: student._id })
       .then()
-      .catch((error) => {
-        showMessage({
-          message: "Aconteceu algum erro.",
-          type: "danger",
-        });
-      });
+      .catch();
   };
 
   const handleBarCodeScanned = async ({ type, data }) => {
