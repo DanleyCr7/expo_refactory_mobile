@@ -54,7 +54,10 @@ export default function App() {
 
   const handleBarCodeScanned = async ({ type, data }) => {
     api
-      .post(`/qrcode/reserve/${reserve._id}`, { qrcode: pathCode })
+      .post(`/qrcode/reserve/${reserve._id}`, {
+        qrcode: pathCode,
+        id_menu: menu._id,
+      })
       .then(async () => {
         dispatch(isCode(scan));
         showMessage({
@@ -65,7 +68,7 @@ export default function App() {
       })
       .catch((error) => {
         showMessage({
-          message: "Aconteceu algum erro.",
+          message: `${error.response.data.message}`,
           type: "danger",
         });
       });
