@@ -15,6 +15,16 @@ import Order from "../../pages/order";
 const SwiperContent = ({ date }) => {
   const [meal, setMeal] = useState({ lunch: true, dinner: false });
   const menu = useSelector((state) => state.lunch);
+  const reserve = useSelector((state) => state.reserve);
+
+  const condicao = () => {
+    if (reserve?.confirm == "não") {
+      return `Confirmação até às ${menu.hourConfirmReserve}`;
+    } else if (menu?._id) {
+      return `Pedidos encerram às ${menu.hourReserve}`;
+    }
+    return "Aguardando";
+  };
 
   return (
     <Box style={styles.boxContainer}>
@@ -27,9 +37,7 @@ const SwiperContent = ({ date }) => {
       </View>
 
       <ButtonOpacity style={styles.warning} activeOpacity={0.8}>
-        <TextButton style={styles.warningText}>
-          Pedidos encerram às {menu.type == 1 ? "20h" : "10h"}
-        </TextButton>
+        <TextButton style={styles.warningText}>{condicao()}</TextButton>
       </ButtonOpacity>
 
       <Order meal={meal} date={date} />

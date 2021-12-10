@@ -1,37 +1,20 @@
 import React, { useState, useEffect } from "react";
 import {
   View,
-  Text,
-  TouchableOpacity,
   StyleSheet,
   RefreshControl,
   ScrollView,
   SafeAreaView,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import Icon from "@expo/vector-icons/MaterialIcons";
-import Swiper from "react-native-swiper";
-
-import isMonday from "date-fns/isMonday";
-import isThurday from "date-fns/isThursday";
-import isWednesday from "date-fns/isWednesday";
-import isTuesday from "date-fns/isTuesday";
-import isFriday from "date-fns/isFriday";
-import isSaturday from "date-fns/isSaturday";
-
 import { Colors } from "../../config/colors";
-import { Container } from "../../components/container";
-import { Box } from "../../components/box";
-import { ButtonOpacityMenu } from "../../components/buttonOpacityMenu";
 import { TextBox } from "../../components/textBox";
 import SwiperContent from "../../components/swiperContent";
-import ContainerSwiper from "../../components/containerSwiper";
 import api from "../../services/api";
 import { addLunch, setStudent, setReserveID } from "../../store/fetchActions";
 import Avaliation from "../../components/avaliation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { format, parse } from "date-fns";
-
+import { showMessage } from "react-native-flash-message";
 import { translate } from "../../config/textWeekDay";
 
 const Menu = ({ navigation }) => {
@@ -80,15 +63,11 @@ const Menu = ({ navigation }) => {
       .then((resp) => {
         console.log(resp.data);
         const menu = resp.data;
-        menu?.date
-          ? setDiaSemana(
-              format(parse(menu?.date, "dd/mm/yyyy", new Date()), "EEEE")
-            )
-          : "";
         isMenu(menu);
         setMenu(menu);
       })
       .catch((erro) => {
+        console.log(erro);
         showMessage({
           message: "Aconteceu algum erro.",
           type: "danger",
@@ -116,9 +95,9 @@ const Menu = ({ navigation }) => {
           />
         )}
         <View style={styles.buttonContent}>
-          <TextBox style={styles.title}>{translate(diaSemana)}</TextBox>
+          <TextBox style={styles.title}>{translate(menu.dayOfWeek)}</TextBox>
         </View>
-        <SwiperContent date={"26/10/2021"} />
+        <SwiperContent />
       </ScrollView>
     </SafeAreaView>
   );

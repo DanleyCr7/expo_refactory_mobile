@@ -1,10 +1,10 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { Dimensions } from 'react-native';
+import React from "react";
+import styled from "styled-components/native";
+import { Dimensions } from "react-native";
 
-import { Colors } from '../../config/colors';
+import { Colors } from "../../config/colors";
 
-const WIDTH = Dimensions.get('window').width;
+const WIDTH = Dimensions.get("screen").width;
 
 export const Box = styled.View`
   flex: 1;
